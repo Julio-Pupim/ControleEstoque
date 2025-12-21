@@ -1,4 +1,4 @@
- name: Deploy Automático
+name: Deploy Automático
 
 on:
   push:
@@ -8,7 +8,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
     - name: Executando deploy via SSH
       uses: appleboy/ssh-action@v1.0.3
