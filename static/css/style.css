@@ -1,0 +1,668 @@
+:root {
+    /* Premium Color Palette */
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --accent-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+
+    --primary-color: #667eea;
+    --primary-dark: #5568d3;
+    --secondary-color: #764ba2;
+    --accent-color: #f5576c;
+
+    --background: #0f0f1e;
+    --surface: #1a1a2e;
+    --surface-light: #252541;
+
+    --text-primary: #ffffff;
+    --text-secondary: #b8b8d1;
+    --text-muted: #6c6c8e;
+
+    --border-color: rgba(255, 255, 255, 0.1);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --shadow-glow: 0 0 20px rgba(102, 126, 234, 0.3);
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--background);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* ========================================
+   NAVIGATION
+   ======================================== */
+
+nav {
+    background: var(--surface);
+    backdrop-filter: blur(20px);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow-md);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+}
+
+.menu {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.menu button {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+    position: relative;
+}
+
+.menu button::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%) scaleX(0);
+    width: 80%;
+    height: 2px;
+    background: var(--primary-gradient);
+    transition: transform var(--transition-normal);
+}
+
+.menu button:hover {
+    color: var(--text-primary);
+    background: rgba(102, 126, 234, 0.1);
+}
+
+.menu button:hover::before {
+    transform: translateX(-50%) scaleX(1);
+}
+
+.mobile-menu-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+}
+
+.mobile-menu-toggle span {
+    width: 24px;
+    height: 2px;
+    background: var(--text-primary);
+    border-radius: 2px;
+    transition: all var(--transition-normal);
+}
+
+/* ========================================
+   MAIN CONTENT & SECTIONS
+   ======================================== */
+
+main {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+section {
+    background: var(--surface);
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    animation: slideIn 0.4s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Header de Seção Flexível (Evita overflow dos botões) */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+h2 {
+    /* Remove margens pois o .section-header gerencia o gap */
+    margin: 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border-color);
+    font-size: 1.75rem;
+    font-weight: 600;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+}
+
+h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+/* ========================================
+   BUTTONS
+   ======================================== */
+
+.btn-primary {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    padding: 0.875rem 1.75rem;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    /* Evita quebra de texto dentro do botão */
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-glow), var(--shadow-md);
+}
+
+/* Botões padrão (secundários) */
+button:not(.btn-primary):not(.mobile-menu-toggle):not(.close) {
+    background: var(--surface-light);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all var(--transition-fast);
+}
+
+button:not(.btn-primary):not(.mobile-menu-toggle):not(.close):hover {
+    background: var(--surface);
+    border-color: var(--primary-color);
+    transform: translateY(-1px);
+}
+
+/* Grupo de botões de ação na tabela */
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    /* Permite quebra em telas muito pequenas */
+}
+
+.action-buttons button {
+    flex: 1;
+    /* Faz botões ocuparem espaço igual ou proporcional */
+    min-width: fit-content;
+    white-space: nowrap;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+}
+
+/* Cor específica para botão Pagar para destacar */
+.btn-pay {
+    background-color: #4facfe !important;
+    color: white !important;
+    border: none !important;
+}
+
+/* ========================================
+   FORMS & INPUTS
+   ======================================== */
+
+input,
+select {
+    background: var(--surface-light);
+    color: var(--text-primary);
+    padding: 0.875rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    width: 100%;
+    font-size: 0.95rem;
+    transition: all var(--transition-fast);
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    background: var(--surface);
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* ========================================
+   TABLES
+   ======================================== */
+
+.table-responsive {
+    overflow-x: auto;
+    border-radius: var(--radius-md);
+    margin-top: 1rem;
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    min-width: 600px;
+    /* Garante que a tabela não esmague demais */
+}
+
+th,
+td {
+    padding: 1rem;
+    text-align: left;
+    vertical-align: middle;
+}
+
+th {
+    background: var(--surface-light);
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--border-color);
+}
+
+tbody tr {
+    border-bottom: 1px solid var(--border-color);
+}
+
+tbody tr:hover {
+    background: var(--surface-light);
+}
+
+/* ========================================
+   MODALS
+   ======================================== */
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    /* Permite scroll se o modal for maior que a tela */
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    padding: 1rem;
+    /* Espaço para não colar nas bordas no mobile */
+}
+
+.modal-content {
+    background: var(--surface);
+    margin: 2rem auto;
+    /* Margem ajustada */
+    padding: 2rem;
+    border: 1px solid var(--border-color);
+    width: 100%;
+    max-width: 500px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
+}
+
+.close {
+    position: absolute;
+    right: 1.5rem;
+    top: 1.5rem;
+    color: var(--text-muted);
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+    z-index: 10;
+}
+
+/* ========================================
+   FILTERS & PAGINATION
+   ======================================== */
+
+.filter-bar {
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+    /* Alinha inputs e botões na base */
+    flex-wrap: wrap;
+    /* Permite quebra de linha em mobile */
+}
+
+.filter-bar input {
+    margin-bottom: 0;
+    /* Remove margem inferior padrão dentro da barra */
+}
+
+.filter-item {
+    flex: 1;
+    min-width: 140px;
+    /* Tamanho mínimo para inputs de data */
+}
+
+/* ========================================
+   POS LAYOUT
+   ======================================== */
+
+.pos-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 1.5rem;
+}
+
+.pos-cart {
+    background: var(--surface-light);
+    padding: 1.5rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+}
+
+.pos-cart ul {
+    list-style: none;
+    margin-bottom: 1rem;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.pos-cart li {
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.total {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: right;
+    border-top: 2px solid var(--border-color);
+    border-bottom: 2px solid var(--border-color);
+}
+
+/* Search Results dropdown */
+.search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--surface-light);
+    border: 1px solid var(--border-color);
+    border-top: none;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: var(--shadow-lg);
+    display: none;
+}
+
+.search-results.active {
+    display: block;
+}
+
+.search-result-item {
+    padding: 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.search-result-item:hover {
+    background: var(--surface);
+}
+
+/* ========================================
+   RESPONSIVE (Mobile & Tablet)
+   ======================================== */
+
+@media (max-width: 768px) {
+    main {
+        padding: 1rem;
+    }
+
+    section {
+        padding: 1.5rem 1rem;
+    }
+
+    /* Header/Nav Adjustments */
+    nav {
+        padding: 1rem;
+        position: sticky;
+        /* Mantém sticky */
+        top: 0;
+        z-index: 1000;
+    }
+
+    /* Layout Adjustments */
+    .pos-container {
+        grid-template-columns: 1fr;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+
+    .section-header h2 {
+        text-align: center;
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .btn-primary {
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Action Buttons in Table */
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .action-buttons button {
+        width: 100%;
+        margin: 0;
+    }
+
+    /* Hamburger Menu Toggle */
+    .mobile-menu-toggle {
+        display: flex;
+        z-index: 1100;
+        /* Garante que o botão fique clicável */
+    }
+
+    /* MOBILE MENU - OVERLAY STYLE */
+    .menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        /* Começa exatamente abaixo da barra de navegação */
+        left: 0;
+        width: 100%;
+        background: rgba(26, 26, 46, 0.95);
+        /* Fundo semi-transparente */
+        backdrop-filter: blur(10px);
+        /* Efeito de vidro */
+        flex-direction: column;
+        padding: 0;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        /* Sombra forte para destacar */
+        border-bottom: 1px solid var(--border-color);
+        z-index: 1000;
+
+        /* Animação de entrada */
+        transform-origin: top;
+        animation: menuSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .menu.active {
+        display: flex;
+    }
+
+    @keyframes menuSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px) scaleY(0.95);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) scaleY(1);
+        }
+    }
+
+    /* Menu Items */
+    .menu button {
+        width: 100%;
+        text-align: center;
+        /* Centralizado fica mais elegante no mobile */
+        padding: 1.25rem;
+        /* Botões maiores para dedo */
+        border-radius: 0;
+        border: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        background: transparent;
+        font-size: 1.1rem;
+    }
+
+    .menu button:last-child {
+        border-bottom: none;
+    }
+
+    .menu button:active {
+        background: rgba(102, 126, 234, 0.1);
+    }
+
+    .menu button::before {
+        display: none;
+        /* Remove sublinhado de hover do desktop */
+    }
+
+    /* Modais e Filtros */
+    .modal {
+        padding: 0.5rem;
+        align-items: flex-end;
+        /* Modal sobe de baixo em telas pequenas se quiser */
+    }
+
+    .modal-content {
+        margin: 1rem auto;
+        padding: 1.5rem;
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-item {
+        width: 100%;
+    }
+
+    .filter-bar button {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+
+    input,
+    select {
+        font-size: 16px;
+        /* Evita zoom automático no iOS */
+    }
+}

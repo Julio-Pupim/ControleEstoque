@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Controle de Estoque</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+    <nav>
+        <div class="logo">Estoque Simples</div>
+        <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="Toggle menu">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="menu" id="main-menu">
+            <button data-section="pos">Venda (POS)</button>
+            <button data-section="products">Produtos</button>
+            <button data-section="customers">Clientes</button>
+            <button data-section="reports">Relatórios</button>
+        </div>
+    </nav>
+
+    <main id="main-content">
+        <section id="pos" class="active">
+            <div class="section-header">
+                <h2>Nova Venda</h2>
+            </div>
+
+            <div class="pos-container">
+                <div class="pos-input">
+                    <label>Cliente (Obrigatório):</label>
+                    <select id="pos-customer-select" required></select>
+
+                    <div style="display: flex; gap: 10px; align-items: flex-end;">
+                        <div style="flex: 0 0 80px;">
+                            <label>Qtd:</label>
+                            <input type="number" id="pos-quantity" value="1" min="1" style="margin-bottom:0;">
+                        </div>
+
+                        <div style="flex: 1; position: relative;">
+                            <label>Produto:</label>
+                            <input type="text" id="pos-search-unified" placeholder="Nome, Barras ou Código..."
+                                autocomplete="off" style="margin-bottom:0;">
+                            <div id="search-results" class="search-results"></div>
+                        </div>
+                    </div>
+
+                    <div id="pos-product-info" style="margin-top: 10px; min-height: 20px; color: #4facfe;"></div>
+                </div>
+
+                <div class="pos-cart">
+                    <h3>Carrinho</h3>
+                    <ul id="pos-cart-list"></ul>
+
+                    <div
+                        style="display:flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 10px; flex-wrap:wrap;">
+                        <label style="margin:0;">Desconto (R$):</label>
+                        <input type="number" id="pos-discount" value="0" min="0" step="0.01"
+                            style="width: 100px; margin:0;">
+                    </div>
+
+                    <div class="total">Total: R$ <span id="pos-total">0.00</span></div>
+                    <button id="btn-finalize-sale" class="btn-primary" style="width: 100%;">Finalizar Venda</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="products" style="display: none;">
+            <div class="section-header">
+                <h2>Produtos</h2>
+                <button id="btn-new-product" class="btn-primary">+ Novo Produto</button>
+            </div>
+
+            <div class="filter-bar" style="display: flex; gap: 10px;">
+                <select id="product-category-filter" style="width: 200px;margin-bottom: 0px;">
+                    <option value="">Todas as Categorias</option>
+                </select>
+                <input type="text" id="product-search-input" placeholder="Buscar produto..." style="flex: 1; margin:0;">
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Marca</th>
+                            <th>Categoria</th>
+                            <th>Preço</th>
+                            <th>Estoque</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-list"></tbody>
+                </table>
+            </div>
+            <div class="pagination-controls" id="product-pagination">
+                <button id="btn-prev-prod">Anterior</button>
+                <span id="product-page-info"></span>
+                <button id="btn-next-prod">Próxima</button>
+            </div>
+        </section>
+
+        <section id="customers" style="display: none;">
+            <div class="section-header">
+                <h2>Clientes</h2>
+                <button id="btn-new-customer" class="btn-primary">+ Novo Cliente</button>
+            </div>
+
+            <div class="filter-bar">
+                <input type="text" id="customer-search-input" placeholder="Buscar cliente..."
+                    style="width:100%; margin:0;">
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Telefone</th>
+                            <th>Saldo Devedor</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customers-list"></tbody>
+                </table>
+            </div>
+            <div class="pagination-controls" id="customer-pagination">
+                <button id="btn-prev-cust">Anterior</button>
+                <span id="customer-page-info"></span>
+                <button id="btn-next-cust">Próxima</button>
+            </div>
+        </section>
+
+        <section id="reports" style="display: none;">
+            <div class="section-header">
+                <h2>Relatórios</h2>
+            </div>
+            <div class="card">
+                <h3>Melhor Cliente</h3>
+                <div id="best-customer-display">Carregando...</div>
+                <button id="btn-refresh-report" class="btn-primary" style="margin-top:1rem;">Atualizar</button>
+            </div>
+        </section>
+    </main>
+
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 id="product-modal-title">Produto</h3>
+            <form id="product-form">
+                <input type="hidden" id="prod-id">
+                <label>Cód. Barras:</label><input type="text" id="prod-barcode" required>
+                <label>Código:</label><input type="text" id="prod-code">
+                <label>Nome:</label><input type="text" id="prod-name" required>
+                <label>Marca:</label>
+                <select id="prod-brand" required>
+                    <!-- Populated by JS -->
+                </select>
+                <label>Categoria:</label>
+                <select id="prod-category" required>
+                    <!-- Populated by JS -->
+                </select>
+                <label>Preço:</label><input type="number" step="0.01" id="prod-price" required>
+                <label id="prod-stock-label">Estoque:</label><input type="number" id="prod-stock" required>
+                <button type="submit" class="btn-primary" style="width:100%">Salvar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="customer-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 id="customer-modal-title">Cliente</h3>
+            <form id="customer-form">
+                <input type="hidden" id="cust-id">
+                <label>Nome:</label><input type="text" id="cust-name" required>
+                <label>Telefone:</label><input type="text" id="cust-phone" required>
+
+                <div id="cust-debt-container">
+                    <label>Débito Inicial (R$):</label>
+                    <input type="number" step="0.01" id="cust-initial-debt" placeholder="0.00">
+                    <small style="display:block; margin-bottom:1rem; color:var(--text-muted); line-height:1.2;">Informe
+                        o valor se o cliente já possuir dívidas antigas.</small>
+                </div>
+
+                <button type="submit" class="btn-primary" style="width:100%">Salvar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="payment-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Pagamento de Dívida</h3>
+            <form id="payment-form">
+                <input type="hidden" id="pay-cust-id">
+                <p id="pay-cust-name-display" style="margin-bottom:1rem; font-weight:600;"></p>
+                <label>Valor (R$):</label>
+                <input type="number" id="pay-amount" step="0.01" min="0.01" required>
+                <button type="submit" class="btn-primary" style="width:100%">Confirmar Pagamento</button>
+                <div class="form-group">
+                    <label>Data do Pagamento</label>
+                    <input type="date" id="pay-date">
+                    <small style="color:#aaa;">Deixe em branco para "Hoje"</small>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="history-modal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <span class="close">&times;</span>
+            <h3>Histórico Financeiro</h3>
+
+            <div class="filter-bar">
+                <div class="filter-item">
+                    <label>De:</label>
+                    <input type="date" id="history-start">
+                </div>
+                <div class="filter-item">
+                    <label>Até:</label>
+                    <input type="date" id="history-end">
+                </div>
+                <button id="btn-filter-history" class="btn-primary">Filtrar</button>
+            </div>
+
+            <ul id="history-list"></ul>
+
+            <div class="pagination-controls" id="history-pagination">
+                <button id="btn-prev-hist">Anterior</button>
+                <span id="history-page-info"></span>
+                <button id="btn-next-hist">Próxima</button>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="/static/js/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,35 @@
+ name: Deploy Automático
+
+on:
+  push:
+    branches:
+      - master 
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Executando deploy via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.VPS_SSH_KEY }}
+        port: 22
+        script: |
+          # Entra na pasta do projeto
+          cd ~/caminho/do/seu/projeto
+
+          # Atualiza o código
+          git pull origin master
+
+          # Instala dependências (caso tenha mudado algo)
+          npm install --production
+
+          # Reinicia a aplicação no PM2
+          # Se o processo se chama 'app-da-mae', por exemplo:
+          pm2 restart app-da-mae --update-env
+          
+          # Salva o estado do PM2 para garantir que volte se o servidor reiniciar
+          pm2 save
