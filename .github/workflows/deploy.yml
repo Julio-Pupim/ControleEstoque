@@ -18,7 +18,7 @@ jobs:
         port: 22
         script: |
           # Entra na pasta do projeto
-          cd ~/caminho/do/seu/projeto
+          cd ~/app
 
           # Atualiza o código
           git pull origin master
