@@ -6,12 +6,13 @@ const path = require('path');
 const ProductController = require('./controller/ProductController');
 const CustomerController = require('./controller/CustomerController'); // Agora importamos o arquivo novo
 const SaleController = require('./controller/SaleController');
+const NFeController      = require('./controller/NFeController');
 
 const app = express();
 const PORT = 3000;
 const staticDir = path.join(__dirname, 'static');
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '5mb' }));
 app.use('/static', express.static(staticDir));
 
 app.get('/', (req, res) => res.sendFile('index.html', { root: staticDir }));
@@ -19,25 +20,31 @@ app.get('/', (req, res) => res.sendFile('index.html', { root: staticDir }));
 // --- Routes ---
 
 // Products
-app.get('/api/products', ProductController.index);
-app.post('/api/products', ProductController.store);
-app.put('/api/products/:id', ProductController.update);
-app.delete('/api/products/:id', ProductController.delete);
-app.get('/api/products/search', ProductController.search);
-app.get('/api/products/barcode/:barcode', ProductController.getByBarcode);
-app.get('/api/categories', ProductController.getCategories);
-app.get('/api/brands', ProductController.getBrands);
+app.get('/api/products/search',           (req, res) => ProductController.search(req, res));
+app.get('/api/products/barcode/:barcode', (req, res) => ProductController.getByBarcode(req, res));
+app.get('/api/products/code/:code',       (req, res) => ProductController.getByCode(req, res));
+app.get('/api/products',                  (req, res) => ProductController.index(req, res));
+app.post('/api/products',                 (req, res) => ProductController.store(req, res));
+app.put('/api/products/:id',              (req, res) => ProductController.update(req, res));
+app.delete('/api/products/:id',           (req, res) => ProductController.delete(req, res));
+app.get('/api/categories',               (req, res) => ProductController.getCategories(req, res));
+app.get('/api/brands',                   (req, res) => ProductController.getBrands(req, res));
+
+// --- NF-e ---
+app.post('/api/nfe/preview', (req, res) => NFeController.preview(req, res));
+app.post('/api/nfe/import',  (req, res) => NFeController.importProducts(req, res));
+
 
 // Customers (Agora usa o Controller em vez de lógica inline)
-app.get('/api/customers', CustomerController.index);
-app.post('/api/customers', CustomerController.store);
-app.put('/api/customers/:id', CustomerController.update);
-app.delete('/api/customers/:id', CustomerController.delete);
-app.post('/api/customers/pay', CustomerController.payDebt);
-app.get('/api/customers/:id/history', CustomerController.history);
+app.get('/api/customers',             (req, res) => CustomerController.index(req, res));
+app.post('/api/customers',            (req, res) => CustomerController.store(req, res));
+app.post('/api/customers/pay',        (req, res) => CustomerController.payDebt(req, res));
+app.put('/api/customers/:id',         (req, res) => CustomerController.update(req, res));
+app.delete('/api/customers/:id',      (req, res) => CustomerController.delete(req, res));
+app.get('/api/customers/:id/history', (req, res) => CustomerController.history(req, res));
 
 // Sales
-app.post('/api/sales', SaleController.store);
+app.post('/api/sales', (req, res) => SaleController.store(req, res));
 
 // Reports (Ainda inline por ser muito simples, mas pode mover para ReportController futuramente)
 app.get('/api/reports/best-customer', async (req, res) => {

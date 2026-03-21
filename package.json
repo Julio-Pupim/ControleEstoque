@@ -13,9 +13,11 @@
   "dependencies": {
     "body-parser": "^2.2.1",
     "express": "^5.1.0",
+    "fast-xml-parser": "^5.5.8",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
-    "@flydotio/dockerfile": "^0.7.10"
+    "@flydotio/dockerfile": "^0.7.10",
+    "jest": "^30.3.0"
   }
 }

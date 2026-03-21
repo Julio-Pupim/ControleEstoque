@@ -44,10 +44,24 @@ export const Api = {
 
     // Usado na verificação de duplicidade e no PDV (Enter)
     getProductByBarcode: (barcode) => request(`/products/barcode/${barcode}`),
+    getProductByCode:   (code)    => request(`/products/code/${encodeURIComponent(code)}`),
 
     getCategories: (brandId) => request(`/categories${brandId ? '?brand_id=' + brandId : ''}`),
     getBrands: () => request('/brands'),
 
+
+     // ─── NF-e ──────────────────────────────────────────────────────────────────
+    nfePreview: (xml) => request('/nfe/preview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ xml }),
+    }),
+ 
+    nfeImport: (products) => request('/nfe/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ products }),
+    }),
     // =========================================
     // CLIENTES
     // =========================================

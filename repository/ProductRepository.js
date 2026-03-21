@@ -44,8 +44,14 @@ class ProductRepository {
         return await db.get("SELECT * FROM products WHERE id = ?", [id]);
     }
 
-    async findByBarcode(barcode) {
-        return await db.get("SELECT * FROM products WHERE barcode = ?", [barcode]);
+     async findByBarcode(barcode) {
+    if (!barcode) return null;
+    return await db.get('SELECT * FROM products WHERE barcode = ?', [barcode]);
+  }
+ 
+    async findByCode(code) {
+        if (!code) return null;
+        return await db.get('SELECT * FROM products WHERE code = ?', [code]);
     }
 
     async search(term) {
@@ -58,21 +64,20 @@ class ProductRepository {
     async create(product) {
         const { barcode, code, name, brand_id, category_id, price, stock } = product;
         const result = await db.run(
-            "INSERT INTO products (barcode, code, name, brand_id, category_id, price, stock) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            [barcode, code, name, brand_id, category_id, price, stock]
-        );
-        return { id: result.lastID, ...product };
-    }
-
+        'INSERT INTO products (barcode, code, name, brand_id, category_id, price, stock) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [barcode || null, code || '', name, brand_id, category_id, price, stock]
+    );
+    return { id: result.lastID, ...product };
+  }
+ 
     async update(id, product) {
         const { barcode, code, name, brand_id, category_id, price, stock } = product;
         await db.run(
-            `UPDATE products SET barcode = ?, code = ?, name = ?, brand_id = ?, category_id = ?, price = ?, stock = ? WHERE id = ?`,
-            [barcode, code, name, brand_id, category_id, price, stock, id]
-        );
-        return { id, ...product };
-    }
-
+        'UPDATE products SET barcode = ?, code = ?, name = ?, brand_id = ?, category_id = ?, price = ?, stock = ? WHERE id = ?',
+        [barcode || null, code || '', name, brand_id, category_id, price, stock, id]
+    );
+    return { id, ...product };
+  }
     async delete(id) {
         return await db.run(`DELETE FROM products WHERE id = ?`, [id]);
     }

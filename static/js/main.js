@@ -2,6 +2,7 @@ import { initProducts } from './modules/products.js';
 import { initCustomers } from './modules/customers.js';
 import { initPos } from './modules/pos.js';
 import { initReports } from './modules/reports.js';
+import { initNFeImport } from './modules/NfeImport.js';
 
 // Roteamento Simples
 const sections = {
@@ -12,23 +13,18 @@ const sections = {
 };
 
 function navigateTo(sectionId) {
-    // Esconde tudo
     document.querySelectorAll('section').forEach(s => s.style.display = 'none');
-
-    // Mostra alvo
     const target = document.getElementById(sectionId);
     if (target) target.style.display = 'block';
 
-    // Gerencia Menu Mobile
     const menu = document.getElementById('main-menu');
     if (menu.classList.contains('active')) menu.classList.remove('active');
 
-    // Inicialização Preguiçosa (Lazy Load)
-    const sectionConfig = sections[sectionId];
-    if (sectionConfig && sectionConfig.init && !sectionConfig.loaded) {
-        sectionConfig.init();
-        sectionConfig.loaded = true;
-    }
+    const cfg = sections[sectionId];
+    if (cfg && cfg.init && !cfg.loaded) {
+        cfg.init();
+        cfg.loaded = true;
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -39,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (section) navigateTo(section);
         });
     });
+    initNFeImport();
 
     // Iniciar na seção padrão
     navigateTo('pos');
@@ -50,3 +47,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+window.toggleMobileMenu = () =>
+    document.getElementById('main-menu').classList.toggle('active');

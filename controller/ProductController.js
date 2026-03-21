@@ -68,7 +68,13 @@ class ProductController {
             res.status(500).json({ status: 500, error: err.message });
         }
     }
-
+    async getByCode(req, res) {
+    try {
+      const product = await ProductRepo.findByCode(req.params.code);
+      if (!product) return res.status(404).json({ status: 404, error: 'Not found' });
+      res.json(product);
+    } catch (err) { res.status(500).json({ status: 500, error: err.message }); }
+  }
     async getCategories(req, res) {
         try {
             const brandId = req.query.brand_id;
