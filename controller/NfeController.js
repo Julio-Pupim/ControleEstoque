@@ -1,8 +1,8 @@
 'use strict';
 
-const { parseNFe }              = require('../services/NFeParser');
-const { findExistingProduct }   = require('../services/ProductLookup');
-const { resolveProductDefaults } = require('../services/NFeResolver');
+const { parseNFe }              = require('../service/NfeParserService');
+const { findExistingProduct }   = require('../service/ProductService');
+const { resolveProductDefaults } = require('../service/NfeResolver');
 const ProductRepo               = require('../repository/ProductRepository');
 
 class NFeController {
