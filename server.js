@@ -6,7 +6,7 @@ const path = require('path');
 const ProductController = require('./controller/ProductController');
 const CustomerController = require('./controller/CustomerController'); // Agora importamos o arquivo novo
 const SaleController = require('./controller/SaleController');
-const NFeController      = require('./controller/NFeController');
+const NFeController      = require('./controller/NfeController');
 
 const app = express();
 const PORT = 3000;
