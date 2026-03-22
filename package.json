@@ -1,6 +1,6 @@
 {
   "name": "inventory_system",
-  "version": "1.0.0",
+  "version": "1.2.1",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

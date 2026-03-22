@@ -18,7 +18,7 @@ jobs:
         port: 22
         script: |
           # Entra na pasta do projeto
-          cd ~/app
+          cd ~/ControleEstoque
 
           # Atualiza o código
           git pull origin master
@@ -28,7 +28,7 @@ jobs:
 
           # Reinicia a aplicação no PM2
           # Se o processo se chama 'app-da-mae', por exemplo:
-          pm2 restart app-da-mae --update-env
+          pm2 restart estoque-v2 --update-env
           
           # Salva o estado do PM2 para garantir que volte se o servidor reiniciar
           pm2 save
