@@ -1,17 +1,24 @@
 'use strict';
 
+const ProductIdentifierRepo = require('../repository/ProductIdentifierRepository');
 
-async function findExistingProduct(p, repo) {
+async function findExistingProduct(p) {
   if (p.barcode) {
-    const byBarcode = await repo.findByBarcode(p.barcode);
-    if (byBarcode) return byBarcode;
+    const product = await ProductIdentifierRepo.findByIdentifier('barcode', p.barcode);
+    if (product) return { product, matchedBy: 'barcode', candidates: [] };
   }
-
+ 
   if (p.code) {
-    return await repo.findByCode(p.code);
+    const product = await ProductIdentifierRepo.findByIdentifier('code', p.code);
+    if (product) return { product, matchedBy: 'code', candidates: [] };
   }
-
-  return null;
+ 
+  const candidates = p.name
+    ? await ProductIdentifierRepo.findSimilarByName(p.name)
+    : [];
+ 
+  return { product: null, matchedBy: null, candidates };
 }
+
 
 module.exports = { findExistingProduct };

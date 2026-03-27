@@ -4,6 +4,7 @@ import { initPos } from './modules/pos.js';
 import { initReports } from './modules/reports.js';
 import { initNFeImport } from './modules/NfeImport.js';
 
+
 // Roteamento Simples
 const sections = {
     'pos': { init: initPos, loaded: false }, // POS geralmente carrega dados frescos sempre

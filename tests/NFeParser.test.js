@@ -3,14 +3,21 @@
 const fs   = require('fs');
 const path = require('path');
 
-const { parseNFe, detectBrand, suggestCategory } = require('../services/NFeParser');
-const { findExistingProduct }                     = require('../services/ProductLookup');
-const { resolveProductDefaults } = require('../services/NFeResolver');
+const { parseNFe, detectBrand, suggestCategory } = require('../service/NfeParserService');
+const { findExistingProduct }                     = require('../service/ProductService');
+const { resolveProductDefaults } = require('../service/NfeResolver');
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const RES = path.join(__dirname, 'resources');
 const xml = (filename) => fs.readFileSync(path.join(RES, filename), 'utf-8');
+
+// Mock do ProductIdentifierRepository para os testes de findExistingProduct
+jest.mock('../repository/ProductIdentifierRepository', () => ({
+  findByIdentifier: jest.fn(),
+  findSimilarByName: jest.fn().mockResolvedValue([]),
+}));
+const mockIdentifierRepo = require('../repository/ProductIdentifierRepository');
 
 const makeRepo = ({ byBarcode = null, byCode = null } = {}) => ({
   findByBarcode: jest.fn().mockResolvedValue(byBarcode),
@@ -474,32 +481,44 @@ describe('parseNFe — tratamento de erros', () => {
 describe('findExistingProduct', () => {
   const existingProduct = { id: 99, name: 'Produto Existente', stock: 10 };
 
-  test('barcode encontrado → retorna sem chamar findByCode', async () => {
-    const repo = makeRepo({ byBarcode: existingProduct });
-    const result = await findExistingProduct({ barcode: '7891234567890', code: 'COD001' }, repo);
-    expect(result).toBe(existingProduct);
-    expect(repo.findByCode).not.toHaveBeenCalled();
+  beforeEach(() => {
+    mockIdentifierRepo.findByIdentifier.mockReset();
+    mockIdentifierRepo.findSimilarByName.mockReset();
+    mockIdentifierRepo.findSimilarByName.mockResolvedValue([]);
   });
 
-  test('barcode não encontrado → cai para findByCode', async () => {
-    const repo = makeRepo({ byBarcode: null, byCode: existingProduct });
-    const result = await findExistingProduct({ barcode: '7899999999999', code: 'COD001' }, repo);
-    expect(result).toBe(existingProduct);
-    expect(repo.findByCode).toHaveBeenCalledWith('COD001');
+  test('barcode encontrado → retorna sem chamar findByIdentifier(code)', async () => {
+    mockIdentifierRepo.findByIdentifier.mockResolvedValueOnce(existingProduct);
+    const result = await findExistingProduct({ barcode: '7891234567890', code: 'COD001' });
+    expect(result.product).toBe(existingProduct);
+    expect(result.matchedBy).toBe('barcode');
+    expect(mockIdentifierRepo.findByIdentifier).toHaveBeenCalledTimes(1);
+    expect(mockIdentifierRepo.findByIdentifier).toHaveBeenCalledWith('barcode', '7891234567890');
   });
 
-  test('barcode null (SEM GTIN) → vai direto para findByCode', async () => {
-    const repo = makeRepo({ byCode: existingProduct });
-    const result = await findExistingProduct({ barcode: null, code: '1002638' }, repo);
-    expect(result).toBe(existingProduct);
-    expect(repo.findByBarcode).not.toHaveBeenCalled();
+  test('barcode não encontrado → cai para findByIdentifier(code)', async () => {
+    mockIdentifierRepo.findByIdentifier
+      .mockResolvedValueOnce(null)        // barcode miss
+      .mockResolvedValueOnce(existingProduct); // code hit
+    const result = await findExistingProduct({ barcode: '7899999999999', code: 'COD001' });
+    expect(result.product).toBe(existingProduct);
+    expect(result.matchedBy).toBe('code');
+    expect(mockIdentifierRepo.findByIdentifier).toHaveBeenCalledWith('code', 'COD001');
   });
 
-  test('sem barcode nem code → retorna null sem queries', async () => {
-    const repo = makeRepo();
-    const result = await findExistingProduct({ barcode: null, code: '' }, repo);
-    expect(result).toBeNull();
-    expect(repo.findByBarcode).not.toHaveBeenCalled();
-    expect(repo.findByCode).not.toHaveBeenCalled();
+  test('barcode null (SEM GTIN) → vai direto para findByIdentifier(code)', async () => {
+    mockIdentifierRepo.findByIdentifier.mockResolvedValueOnce(existingProduct);
+    const result = await findExistingProduct({ barcode: null, code: '1002638' });
+    expect(result.product).toBe(existingProduct);
+    expect(result.matchedBy).toBe('code');
+    expect(mockIdentifierRepo.findByIdentifier).toHaveBeenCalledTimes(1);
+    expect(mockIdentifierRepo.findByIdentifier).toHaveBeenCalledWith('code', '1002638');
+  });
+
+  test('sem barcode nem code → retorna product null sem queries', async () => {
+    const result = await findExistingProduct({ barcode: null, code: '' });
+    expect(result.product).toBeNull();
+    expect(result.matchedBy).toBeNull();
+    expect(mockIdentifierRepo.findByIdentifier).not.toHaveBeenCalled();
   });
 });

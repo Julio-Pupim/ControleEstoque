@@ -3,7 +3,8 @@
 const { parseNFe }              = require('../service/NfeParserService');
 const { findExistingProduct }   = require('../service/ProductService');
 const { resolveProductDefaults } = require('../service/NfeResolver');
-const ProductRepo               = require('../repository/ProductRepository');
+const ProductRepo                = require('../repository/ProductRepository');
+const ProductIdentifierRepo      = require('../repository/ProductIdentifierRepository');
 
 class NFeController {
 
@@ -21,19 +22,19 @@ class NFeController {
       ]);
 
       const products = await Promise.all(parsed.products.map(async (p) => {
-        const existing = await findExistingProduct(p, ProductRepo);
-        const defaults  = resolveProductDefaults(p, allCategories, allBrands);
-
+        const { product: existing, matchedBy, candidates } =
+          await findExistingProduct(p);
+          const defaults = resolveProductDefaults(p, allCategories, allBrands);
+          const action = existing ? 'update_stock' : candidates.length > 0 ? 'resolve' : 'create';
+          
         return {
           ...p,
           ...defaults,
-          action: existing ? 'update_stock' : 'create',
+          action,
+          matchedBy,
           existingProduct: existing
-            ? { id: existing.id, name: existing.name, stock: existing.stock, price: existing.price }
-            : null,
-          matchedBy: existing
-            ? (p.barcode && existing.barcode === p.barcode ? 'barcode' : 'code')
-            : null,
+            ? { id: existing.id, name: existing.name, stock: existing.stock, price: existing.price } : null,
+          candidates: candidates.map(c => ({ id: c.id, name: c.name, brand: c.brand })),
         };
       }));
 
@@ -56,11 +57,13 @@ class NFeController {
         if (p.action === 'skip')         { results.skipped++; continue; }
         if (p.action === 'update_stock') { await this._updateStock(p); results.updated++; continue; }
         if (p.action === 'create')       { await this._createProduct(p); results.created++; continue; }
+        if (p.action === 'link')          { await this._linkIdentifier(p); results.linked++; continue; }
         results.errors.push({ product: p.name, error: `Ação desconhecida: ${p.action}` });
       } catch (err) {
         results.errors.push({ product: p.name, error: err.message });
       }
     }
+    
 
     res.status(results.errors.length > 0 ? 207 : 201).json(results);
   }
@@ -91,6 +94,24 @@ class NFeController {
       stock:       Math.floor(p.quantity),
     });
   }
+  async _linkIdentifier(p) {
+    if (!p.linkToProductId) throw new Error(`Produto de destino não informado para: ${p.name}`);
+ 
+    // Vincula o código novo ao produto existente
+    if (p.barcode) {
+      await ProductIdentifierRepo.addIdentifier(p.linkToProductId, 'barcode', p.barcode);
+    }
+    if (p.code) {
+      await ProductIdentifierRepo.addIdentifier(p.linkToProductId, 'code', p.code);
+    }
+ 
+    // Atualiza o estoque após vincular
+    await this._updateStock({
+      ...p,
+      existingProduct: { id: p.linkToProductId },
+    });
+  }
+
 }
 
 module.exports = new NFeController();

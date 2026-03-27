@@ -123,11 +123,37 @@ function renderPreview(data) {
   const tbody = $('#nfe-product-rows');
   tbody.innerHTML = '';
 
-  data.products.forEach((p, idx) => {
-    const isNew = p.action === 'create';
-    const statusBadge = isNew
-      ? '<span class="nfe-badge nfe-badge--ok">NOVO</span>'
-      : `<span class="nfe-badge nfe-badge--info">JÁ EXISTE · estoque atual: ${p.existingProduct?.stock ?? '?'}</span>`;
+data.products.forEach((p, idx) => {
+    let statusBadge = '';
+    let resolveSelectHtml = '';
+
+    // 1. Definir o Badge de Estado e o Select de Resolução (se aplicável)
+    if (p.action === 'create') {
+      statusBadge = '<span class="nfe-badge nfe-badge--ok">NOVO</span>';
+    } else if (p.action === 'update_stock') {
+      statusBadge = `<span class="nfe-badge nfe-badge--info">JÁ EXISTE · estoque atual: ${p.existingProduct?.stock ?? '?'}</span>`;
+    } else if (p.action === 'resolve') {
+      statusBadge = '<span class="nfe-badge nfe-badge--warn">⚠ CÓDIGO NÃO ENCONTRADO</span>';
+      
+      // Construir as opções de candidatos
+      let candidateOptions = `<option value="new">Cadastrar como novo</option>`;
+      if (p.candidates && p.candidates.length > 0) {
+        p.candidates.forEach(c => {
+          // c.id e c.name devem vir da API
+          candidateOptions += `<option value="${c.id}">Vincular a: ${c.name}</option>`;
+        });
+      }
+      
+      resolveSelectHtml = `
+        <div style="margin-top: 8px;">
+          <select class="nfe-resolve-sel" data-idx="${idx}" style="padding: 4px; font-size: 0.85rem; width: 100%; border-radius: 4px; border: 1px solid var(--border-color);">
+            ${candidateOptions}
+          </select>
+        </div>
+      `;
+    } else {
+      statusBadge = '<span class="nfe-badge nfe-badge--muted">IGNORADO</span>';
+    }
 
     const matchedByHint = p.matchedBy
       ? `<small style="color:var(--text-muted);font-size:.7rem;">encontrado por ${p.matchedBy === 'barcode' ? 'cód. barras' : 'cód. interno'}</small>`
@@ -142,7 +168,7 @@ function renderPreview(data) {
           <small class="nfe-product-meta">
             ${p.barcode ? p.barcode : '<em>Sem GTIN</em>'} &nbsp;·&nbsp; cod. ${p.code} &nbsp;·&nbsp; NCM ${p.ncm}
           </small>
-        </td>
+          ${resolveSelectHtml} </td>
         <td class="nfe-col-custo">
           <span class="nfe-cost">${formatMoney(p.costPrice)}</span>
           <small style="color:var(--text-muted);display:block;font-size:.7rem;">custo unitário</small>
@@ -217,6 +243,14 @@ function renderSalePriceInput(idx, p) {
 }
 
 function renderActionSelect(idx, currentAction) {
+  if (currentAction === 'resolve') {
+    return `
+      <select class="nfe-action-sel" data-idx="${idx}">
+        <option value="resolve" selected>Resolver pendência</option>
+        <option value="skip">Ignorar</option>
+      </select>
+    `;
+  }
   return `
     <select class="nfe-action-sel" data-idx="${idx}">
       <option value="create"       ${currentAction === 'create'       ? 'selected' : ''}>Criar</option>
