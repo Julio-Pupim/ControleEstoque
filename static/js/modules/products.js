@@ -28,8 +28,7 @@ export function initProducts() {
 
   // Detecta produto existente ao sair do campo de código interno
   $('#prod-code').addEventListener('blur', (e) => {
-    // Só tenta pelo code se barcode estiver vazio (evita dupla detecção)
-    if (e.target.value && !$('#prod-id').value && !$('#prod-barcode').value) {
+    if (e.target.value && !$('#prod-id').value) {
       detectExistingProduct({ code: e.target.value });
     }
   });
