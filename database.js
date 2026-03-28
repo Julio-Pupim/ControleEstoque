@@ -142,44 +142,80 @@ db.serialize(() => {
   });
   stmtCat.finalize();
 
-  // Migrations safe check
-  db.run("ALTER TABLE sales ADD COLUMN discount REAL DEFAULT 0", (err) => {
-    // Ignore error if column exists
-  });
-  db.run(`CREATE TABLE IF NOT EXISTS cycles (
-        id         INTEGER PRIMARY KEY AUTOINCREMENT,
-        brand_id   INTEGER NOT NULL,
-        name       TEXT    NOT NULL,
-        start_date TEXT    NOT NULL,
-        end_date   TEXT    NOT NULL,
-        UNIQUE(brand_id, name),
-        FOREIGN KEY(brand_id) REFERENCES brands(id)
-  )`);
-  db.run(`CREATE TABLE IF NOT EXISTS product_cycle_prices (
-    id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    product_id  INTEGER NOT NULL,
-    cycle_id    INTEGER NOT NULL,
-    promo_price REAL    NOT NULL,
-    UNIQUE(product_id, cycle_id),        -- INSERT OR REPLACE é idempotente
-    FOREIGN KEY(product_id) REFERENCES products(id),
-    FOREIGN KEY(cycle_id)   REFERENCES cycles(id)
-  )`)
-  db.run(`CREATE TABLE IF NOT EXISTS product_identifiers (
-    id         INTEGER PRIMARY KEY AUTOINCREMENT,
-    product_id INTEGER NOT NULL,
-    type       TEXT    NOT NULL CHECK(type IN ('barcode', 'code')),
-    value      TEXT    NOT NULL,
-    UNIQUE(type, value),
-    FOREIGN KEY(product_id) REFERENCES products(id)
-  )`);
-
-  db.run(
-    "CREATE INDEX IF NOT EXISTS idx_product_identifiers_lookup ON product_identifiers(type, value)",
+  const runMigration = (sql, label) => {
+    db.run(sql, (err) => {
+      if (err) {
+        // ALTER TABLE dá erro se coluna já existe — isso é esperado
+        if (err.message?.includes('duplicate column') || err.message?.includes('already exists')) {
+          return; // Silencia apenas esse caso específico
+        }
+        console.error(`[Migration] ERRO em "${label}":`, err.message);
+      } else {
+        console.log(`[Migration] OK: ${label}`);
+      }
+    });
+  };
+ 
+  runMigration(
+    "ALTER TABLE sales ADD COLUMN discount REAL DEFAULT 0",
+    "add discount to sales"
   );
-  db.run(`INSERT OR IGNORE INTO product_identifiers (product_id, type, value) 
-        SELECT id, 'barcode', barcode FROM products WHERE barcode IS NOT NULL`);
-  db.run(`INSERT OR IGNORE INTO product_identifiers (product_id, type, value)
-        SELECT id, 'code', code FROM products WHERE code IS NOT NULL AND code != ''`);
+ 
+  runMigration(`
+    CREATE TABLE IF NOT EXISTS cycles (
+      id         INTEGER PRIMARY KEY AUTOINCREMENT,
+      brand_id   INTEGER NOT NULL,
+      name       TEXT    NOT NULL,
+      start_date TEXT    NOT NULL,
+      end_date   TEXT    NOT NULL,
+      UNIQUE(brand_id, name),
+      FOREIGN KEY(brand_id) REFERENCES brands(id)
+    )`,
+    "create cycles"
+  );
+ 
+  runMigration(`
+    CREATE TABLE IF NOT EXISTS product_cycle_prices (
+      id          INTEGER PRIMARY KEY AUTOINCREMENT,
+      product_id  INTEGER NOT NULL,
+      cycle_id    INTEGER NOT NULL,
+      promo_price REAL    NOT NULL,
+      UNIQUE(product_id, cycle_id),
+      FOREIGN KEY(product_id) REFERENCES products(id),
+      FOREIGN KEY(cycle_id)   REFERENCES cycles(id)
+    )`,
+    "create product_cycle_prices"
+  );
+ 
+  runMigration(`
+    CREATE TABLE IF NOT EXISTS product_identifiers (
+      id         INTEGER PRIMARY KEY AUTOINCREMENT,
+      product_id INTEGER NOT NULL,
+      type       TEXT    NOT NULL CHECK(type IN ('barcode', 'code')),
+      value      TEXT    NOT NULL,
+      UNIQUE(type, value),
+      FOREIGN KEY(product_id) REFERENCES products(id)
+    )`,
+    "create product_identifiers"
+  );
+ 
+  runMigration(
+    "CREATE INDEX IF NOT EXISTS idx_product_identifiers_lookup ON product_identifiers(type, value)",
+    "create index product_identifiers"
+  );
+ 
+  // Seed: copia identificadores existentes dos produtos para a nova tabela
+  runMigration(
+    `INSERT OR IGNORE INTO product_identifiers (product_id, type, value)
+     SELECT id, 'barcode', barcode FROM products WHERE barcode IS NOT NULL`,
+    "seed barcodes into product_identifiers"
+  );
+ 
+  runMigration(
+    `INSERT OR IGNORE INTO product_identifiers (product_id, type, value)
+     SELECT id, 'code', code FROM products WHERE code IS NOT NULL AND code != ''`,
+    "seed codes into product_identifiers"
+  );
 
   // Populate Brand-Category Relationships (Idempotent approach)
   // Map Brands to Categories
