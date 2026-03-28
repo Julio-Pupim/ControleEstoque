@@ -1,0 +1,38 @@
+<!-- Categorias -->
+<section id="categories" style="display:none;">
+  <div class="section-header">
+    <h2>Categorias</h2>
+    <button id="btn-new-category" class="btn-primary">+ Nova Categoria</button>
+  </div>
+
+  <div class="table-responsive">
+    <table>
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Marcas Associadas</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="categories-list"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Modal: Categoria -->
+<div id="category-modal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h3 id="cat-modal-title">Categoria</h3>
+    <form id="category-form">
+      <input type="hidden" id="cat-id">
+      <label>Nome:</label>
+      <input type="text" id="cat-name" required placeholder="Nome da categoria">
+
+      <label>Marcas associadas:</label>
+      <div id="cat-brands-list" class="cat-brands-grid"></div>
+
+      <button type="submit" class="btn-primary" style="width:100%;margin-top:1rem;">Salvar</button>
+    </form>
+  </div>
+</div>

@@ -107,5 +107,20 @@ export const Api = {
     }),
 
     getBestCustomer: () => request('/reports/best-customer'),
-    getMonthlyProfit: () => request('/reports/monthly-profit')
+    getMonthlyProfit: () => request('/reports/monthly-profit'),
+
+    // =========================================
+    // CATEGORIAS (CRUD)
+    // =========================================
+    getCategoriesManage: () => request('/categories/manage'),
+    saveCategory: (category) => {
+        const method = category.id ? 'PUT' : 'POST';
+        const url = category.id ? `/categories/manage/${category.id}` : '/categories/manage';
+        return request(url, {
+            method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(category)
+        });
+    },
+    deleteCategory: (id) => request(`/categories/manage/${id}`, { method: 'DELETE' }),
 };

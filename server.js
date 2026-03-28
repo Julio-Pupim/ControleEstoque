@@ -7,6 +7,7 @@ const ProductController = require('./controller/ProductController');
 const CustomerController = require('./controller/CustomerController'); // Agora importamos o arquivo novo
 const SaleController = require('./controller/SaleController');
 const NFeController      = require('./controller/NfeController');
+const CategoryController = require('./controller/CategoryController');
 
 const app = express();
 const PORT = 3000;
@@ -29,6 +30,13 @@ app.put('/api/products/:id',              (req, res) => ProductController.update
 app.delete('/api/products/:id',           (req, res) => ProductController.delete(req, res));
 app.get('/api/categories',               (req, res) => ProductController.getCategories(req, res));
 app.get('/api/brands',                   (req, res) => ProductController.getBrands(req, res));
+
+// Categories CRUD
+app.get('/api/categories/manage',        (req, res) => CategoryController.index(req, res));
+app.get('/api/categories/manage/:id',    (req, res) => CategoryController.show(req, res));
+app.post('/api/categories/manage',       (req, res) => CategoryController.store(req, res));
+app.put('/api/categories/manage/:id',    (req, res) => CategoryController.update(req, res));
+app.delete('/api/categories/manage/:id', (req, res) => CategoryController.delete(req, res));
 
 // --- NF-e ---
 app.post('/api/nfe/preview', (req, res) => NFeController.preview(req, res));

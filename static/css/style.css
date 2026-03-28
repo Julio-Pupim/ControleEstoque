@@ -505,6 +505,58 @@ tbody tr:hover {
 }
 
 /* ========================================
+   CATEGORIES
+   ======================================== */
+
+.cat-brand-badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    margin: 0.15rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border-radius: 20px;
+    background: rgba(102, 126, 234, 0.15);
+    color: var(--primary-color);
+    border: 1px solid rgba(102, 126, 234, 0.25);
+}
+
+.cat-brands-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: var(--surface-light);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+}
+
+.cat-brand-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+    margin: 0;
+}
+
+.cat-brand-checkbox:hover {
+    background: rgba(102, 126, 234, 0.1);
+    color: var(--text-primary);
+}
+
+.cat-brand-checkbox input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+    padding: 0;
+    accent-color: var(--primary-color);
+}
+
+/* ========================================
    RESPONSIVE (Mobile & Tablet)
    ======================================== */
 

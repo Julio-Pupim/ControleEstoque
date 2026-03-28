@@ -2,16 +2,18 @@ import { initProducts } from './modules/products.js';
 import { initCustomers } from './modules/customers.js';
 import { initPos } from './modules/pos.js';
 import { initReports } from './modules/reports.js';
+import { initCategories } from './modules/categories.js';
 import { initNFeImport } from './modules/NfeImport.js';
 
 const sections = {
     'pos':       { init: initPos, loaded: false },
     'products':  { init: initProducts, loaded: false },
-    'customers': { init: initCustomers, loaded: false },
-    'reports':   { init: initReports, loaded: false }
+    'customers':  { init: initCustomers, loaded: false },
+    'categories': { init: initCategories, loaded: false },
+    'reports':    { init: initReports, loaded: false }
 };
 
-const PARTIALS = ['pos', 'products', 'customers', 'reports'];
+const PARTIALS = ['pos', 'products', 'customers', 'categories', 'reports'];
 
 async function loadPartials() {
     const results = await Promise.all(
