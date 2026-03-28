@@ -27,7 +27,7 @@ class SaleController {
                 if (product.stock < item.quantity) throw new Error(`Estoque insuficiente: ${product.name}`);
 
                 subTotal += product.price * item.quantity;
-                checkedItems.push({ ...item, product_id: product.id, price: product.price });
+                checkedItems.push({ ...item, product_id: product.id, price: product.price, cost: product.cost || 0 });
             }
 
             // 2. Executar Transação (Venda + Baixa Estoque + Débito Cliente)
@@ -42,11 +42,11 @@ class SaleController {
                         if (err) { db.raw.run("ROLLBACK"); return reject(err); }
                         const saleId = this.lastID;
 
-                        const stmtItem = db.raw.prepare("INSERT INTO sale_items (sale_id, product_id, quantity, price) VALUES (?, ?, ?, ?)");
+                        const stmtItem = db.raw.prepare("INSERT INTO sale_items (sale_id, product_id, quantity, price, cost) VALUES (?, ?, ?, ?, ?)");
                         const stmtStock = db.raw.prepare("UPDATE products SET stock = stock - ? WHERE id = ?");
 
                         checkedItems.forEach(i => {
-                            stmtItem.run(saleId, i.product_id, i.quantity, i.price);
+                            stmtItem.run(saleId, i.product_id, i.quantity, i.price, i.cost);
                             stmtStock.run(i.quantity, i.product_id);
                         });
 

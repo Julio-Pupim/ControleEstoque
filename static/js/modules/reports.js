@@ -2,11 +2,11 @@ import { Api } from '../api.js';
 import { formatMoney, $ } from '../utils.js';
 
 export function initReports() {
-    // Listener do botão de atualizar
     $('#btn-refresh-report').addEventListener('click', loadBestCustomer);
+    $('#btn-refresh-profit').addEventListener('click', loadMonthlyProfit);
 
-    // Carrega automaticamente ao entrar na aba (opcional)
     loadBestCustomer();
+    loadMonthlyProfit();
 }
 
 async function loadBestCustomer() {
@@ -32,4 +32,40 @@ async function loadBestCustomer() {
         console.error(err);
         display.innerHTML = 'Erro ao carregar dados.';
     }
+}
+
+async function loadMonthlyProfit() {
+    const tbody = $('#monthly-profit-list');
+    tbody.innerHTML = '<tr><td colspan="5">Carregando...</td></tr>';
+
+    try {
+        const data = await Api.getMonthlyProfit();
+
+        if (!data || data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5">Sem dados de vendas ainda.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = data.map(r => `
+            <tr>
+                <td>${formatMonth(r.month)}</td>
+                <td>${formatMoney(r.revenue)}</td>
+                <td>${formatMoney(r.totalCost)}</td>
+                <td style="color: ${r.profit >= 0 ? '#4facfe' : '#ff6b6b'}; font-weight: bold;">
+                    ${formatMoney(r.profit)}
+                </td>
+                <td>${r.margin}%</td>
+            </tr>
+        `).join('');
+    } catch (err) {
+        console.error(err);
+        tbody.innerHTML = '<tr><td colspan="5">Erro ao carregar dados.</td></tr>';
+    }
+}
+
+function formatMonth(yyyymm) {
+    const [year, month] = yyyymm.split('-');
+    const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+                    'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    return `${months[parseInt(month) - 1]}/${year}`;
 }

@@ -75,6 +75,7 @@ class NFeController {
 
     const updated = { ...existing, stock: existing.stock + Math.floor(p.quantity) };
     if (p.updatePrice && p.salePrice > 0) updated.price = parseFloat(p.salePrice);
+    if (p.costPrice) updated.cost = parseFloat(p.costPrice);
     await ProductRepo.update(existing.id, updated);
   }
 
@@ -91,6 +92,7 @@ class NFeController {
       brand_id:    p.brand_id,
       category_id: p.category_id,
       price:       salePrice,
+      cost:        parseFloat(p.costPrice) || 0,
       stock:       Math.floor(p.quantity),
     });
   }

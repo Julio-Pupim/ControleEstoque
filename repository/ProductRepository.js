@@ -67,11 +67,11 @@ class ProductRepository {
     );
 }
     async create(product) {
-        const { barcode, code, name, brand_id, category_id, price, stock } = product;
+        const { barcode, code, name, brand_id, category_id, price, cost, stock } = product;
 
         const result = await db.run(
-            'INSERT INTO products (barcode, code, name, brand_id, category_id, price, stock) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [barcode ?? null, code ?? '', name, brand_id, category_id, price, stock],
+            'INSERT INTO products (barcode, code, name, brand_id, category_id, price, cost, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            [barcode ?? null, code ?? '', name, brand_id, category_id, price, cost ?? 0, stock],
         );
         const product_id = result.lastID;
         await this._syncIdentifiers(product_id, barcode, code);
@@ -80,10 +80,10 @@ class ProductRepository {
     }
  
     async update(id, product) {
-        const { barcode, code, name, brand_id, category_id, price, stock } = product;
+        const { barcode, code, name, brand_id, category_id, price, cost, stock } = product;
         await db.run(
-            'UPDATE products SET barcode = ?, code = ?, name = ?, brand_id = ?, category_id = ?, price = ?, stock = ? WHERE id = ?',
-            [barcode ?? null, code ?? '', name, brand_id, category_id, price, stock, id],
+            'UPDATE products SET barcode = ?, code = ?, name = ?, brand_id = ?, category_id = ?, price = ?, cost = ?, stock = ? WHERE id = ?',
+            [barcode ?? null, code ?? '', name, brand_id, category_id, price, cost ?? 0, stock, id],
         );
         await this._syncIdentifiers(id, barcode, code);
         return { id, ...product };

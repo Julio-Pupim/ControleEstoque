@@ -61,4 +61,32 @@ app.get('/api/reports/best-customer', async (req, res) => {
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+app.get('/api/reports/monthly-profit', async (req, res) => {
+    try {
+        const db = require('./database');
+        const rows = await db.all(`
+            SELECT
+                strftime('%Y-%m', s.created_at) AS month,
+                SUM(si.price * si.quantity)     AS revenue,
+                SUM(si.cost * si.quantity)      AS total_cost,
+                SUM((si.price - si.cost) * si.quantity) AS profit
+            FROM sale_items si
+            JOIN sales s ON s.id = si.sale_id
+            GROUP BY strftime('%Y-%m', s.created_at)
+            ORDER BY month DESC
+            LIMIT 12
+        `);
+
+        const result = rows.map(r => ({
+            month: r.month,
+            revenue: r.revenue || 0,
+            totalCost: r.total_cost || 0,
+            profit: r.profit || 0,
+            margin: r.revenue > 0 ? ((r.profit / r.revenue) * 100).toFixed(1) : '0.0',
+        }));
+
+        res.json(result);
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 app.listen(PORT, '::', () => console.log(`Server running on http://localhost:${PORT}`));

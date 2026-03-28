@@ -86,6 +86,7 @@ function renderTable(products) {
       <td>${p.name}</td>
       <td>${p.brand}</td>
       <td>${p.category || '-'}</td>
+      <td>${formatMoney(p.cost)}</td>
       <td>${formatMoney(p.price)}</td>
       <td>${p.stock}</td>
       <td>
@@ -141,11 +142,12 @@ function openModal(p = null, { stockOnly = false } = {}) {
   $('#prod-name').value    = p ? p.name     : '';
   $('#prod-brand').value   = p ? p.brand_id : '';
   $('#prod-price').value   = p ? p.price    : '';
+  $('#prod-cost').value    = p ? (p.cost || '') : '';
   $('#prod-stock').value   = p ? p.stock    : '';
 
   // Modo só-estoque: bloqueia os campos que não devem ser alterados
   const lockFields = stockOnly;
-  ['prod-barcode', 'prod-code', 'prod-name', 'prod-brand', 'prod-category', 'prod-price']
+  ['prod-barcode', 'prod-code', 'prod-name', 'prod-brand', 'prod-category', 'prod-price', 'prod-cost']
     .forEach(id => { $(`#${id}`).disabled = lockFields; });
 
   if (stockOnly) {
@@ -159,7 +161,7 @@ function openModal(p = null, { stockOnly = false } = {}) {
     delete $('#prod-stock').dataset.addToExisting;
     delete $('#prod-stock').dataset.currentStock;
     // Habilita todos
-    ['prod-barcode', 'prod-code', 'prod-name', 'prod-brand', 'prod-category', 'prod-price']
+    ['prod-barcode', 'prod-code', 'prod-name', 'prod-brand', 'prod-category', 'prod-price', 'prod-cost']
       .forEach(id => { $(`#${id}`).disabled = false; });
   }
 
@@ -201,6 +203,7 @@ async function saveProduct(e) {
     brand_id:    $('#prod-brand').value,
     category_id: $('#prod-category').value,
     price:       parseFloat($('#prod-price').value),
+    cost:        parseFloat($('#prod-cost').value) || 0,
     stock:       addToExisting ? currentStock + inputStock : inputStock,
   };
 

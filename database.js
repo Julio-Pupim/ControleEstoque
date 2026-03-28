@@ -217,6 +217,16 @@ db.serialize(() => {
     "seed codes into product_identifiers"
   );
 
+  runMigration(
+    "ALTER TABLE products ADD COLUMN cost REAL DEFAULT 0",
+    "add cost to products"
+  );
+
+  runMigration(
+    "ALTER TABLE sale_items ADD COLUMN cost REAL DEFAULT 0",
+    "add cost to sale_items"
+  );
+
   // Populate Brand-Category Relationships (Idempotent approach)
   // Map Brands to Categories
   const brandCategoryMap = {

@@ -1,0 +1,87 @@
+<!-- Clientes -->
+<section id="customers" style="display:none;">
+  <div class="section-header">
+    <h2>Clientes</h2>
+    <button id="btn-new-customer" class="btn-primary">+ Novo Cliente</button>
+  </div>
+  <div class="filter-bar">
+    <input type="text" id="customer-search-input" placeholder="Buscar cliente..." style="width:100%;margin:0;">
+  </div>
+  <div class="table-responsive">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th><th>Nome</th><th>Telefone</th><th>Saldo Devedor</th><th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="customers-list"></tbody>
+    </table>
+  </div>
+  <div class="pagination-controls" id="customer-pagination">
+    <button id="btn-prev-cust">Anterior</button>
+    <span id="customer-page-info"></span>
+    <button id="btn-next-cust">Próxima</button>
+  </div>
+</section>
+
+<!-- Modal: Cliente -->
+<div id="customer-modal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h3 id="customer-modal-title">Cliente</h3>
+    <form id="customer-form">
+      <input type="hidden" id="cust-id">
+      <label>Nome:</label>
+      <input type="text" id="cust-name" required>
+      <label>Telefone:</label>
+      <input type="text" id="cust-phone" required>
+      <div id="cust-debt-container">
+        <label>Débito Inicial (R$):</label>
+        <input type="number" step="0.01" id="cust-initial-debt" placeholder="0.00">
+        <small style="display:block;margin-bottom:1rem;color:var(--text-muted);line-height:1.2;">
+          Informe o valor se o cliente já possuir dívidas antigas.
+        </small>
+      </div>
+      <button type="submit" class="btn-primary" style="width:100%">Salvar</button>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Pagamento -->
+<div id="payment-modal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h3>Pagamento de Dívida</h3>
+    <form id="payment-form">
+      <input type="hidden" id="pay-cust-id">
+      <p id="pay-cust-name-display" style="margin-bottom:1rem;font-weight:600;"></p>
+      <label>Valor (R$):</label>
+      <input type="number" id="pay-amount" step="0.01" min="0.01" required>
+      <div class="form-group">
+        <label>Data do Pagamento</label>
+        <input type="date" id="pay-date">
+        <small style="color:#aaa;">Deixe em branco para "Hoje"</small>
+      </div>
+      <button type="submit" class="btn-primary" style="width:100%">Confirmar Pagamento</button>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Histórico -->
+<div id="history-modal" class="modal">
+  <div class="modal-content" style="max-width:600px;">
+    <span class="close">&times;</span>
+    <h3>Histórico Financeiro</h3>
+    <div class="filter-bar">
+      <div class="filter-item"><label>De:</label><input type="date" id="history-start"></div>
+      <div class="filter-item"><label>Até:</label><input type="date" id="history-end"></div>
+      <button id="btn-filter-history" class="btn-primary">Filtrar</button>
+    </div>
+    <ul id="history-list"></ul>
+    <div class="pagination-controls" id="history-pagination">
+      <button id="btn-prev-hist">Anterior</button>
+      <span id="history-page-info"></span>
+      <button id="btn-next-hist">Próxima</button>
+    </div>
+  </div>
+</div>

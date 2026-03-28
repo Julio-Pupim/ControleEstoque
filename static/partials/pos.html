@@ -1,0 +1,40 @@
+<!-- POS / Nova Venda -->
+<section id="pos" style="display:none;">
+  <div class="section-header">
+    <h2>Nova Venda</h2>
+  </div>
+  <div class="pos-container">
+    <div class="pos-input">
+      <label>Cliente (Obrigatório):</label>
+      <select id="pos-customer-select" required></select>
+
+      <div style="display:flex;gap:10px;align-items:flex-end;">
+        <div style="flex:0 0 80px;">
+          <label>Qtd:</label>
+          <input type="number" id="pos-quantity" value="1" min="1" style="margin-bottom:0;">
+        </div>
+        <div style="flex:1;position:relative;">
+          <label>Produto:</label>
+          <input type="text" id="pos-search-unified" placeholder="Nome, Barras ou Código..."
+                 autocomplete="off" style="margin-bottom:0;">
+          <div id="search-results" class="search-results"></div>
+        </div>
+      </div>
+
+      <div id="pos-product-info" style="margin-top:10px;min-height:20px;color:#4facfe;"></div>
+    </div>
+
+    <div class="pos-cart">
+      <h3>Carrinho</h3>
+      <ul id="pos-cart-list"></ul>
+
+      <div style="display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap;">
+        <label style="margin:0;">Desconto (R$):</label>
+        <input type="number" id="pos-discount" value="0" min="0" step="0.01" style="width:100px;margin:0;">
+      </div>
+
+      <div class="total">Total: R$ <span id="pos-total">0.00</span></div>
+      <button id="btn-finalize-sale" class="btn-primary" style="width:100%;">Finalizar Venda</button>
+    </div>
+  </div>
+</section>

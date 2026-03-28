@@ -4,14 +4,36 @@ import { initPos } from './modules/pos.js';
 import { initReports } from './modules/reports.js';
 import { initNFeImport } from './modules/NfeImport.js';
 
-
-// Roteamento Simples
 const sections = {
-    'pos': { init: initPos, loaded: false }, // POS geralmente carrega dados frescos sempre
-    'products': { init: initProducts, loaded: false },
+    'pos':       { init: initPos, loaded: false },
+    'products':  { init: initProducts, loaded: false },
     'customers': { init: initCustomers, loaded: false },
-    'reports': { init: initReports, loaded: false }
+    'reports':   { init: initReports, loaded: false }
 };
+
+const PARTIALS = ['pos', 'products', 'customers', 'reports'];
+
+async function loadPartials() {
+    const results = await Promise.all(
+        PARTIALS.map(name =>
+            fetch(`/static/partials/${name}.html`).then(r => {
+                if (!r.ok) throw new Error(`Falha ao carregar partial: ${name}`);
+                return r.text();
+            })
+        )
+    );
+
+    const main = document.getElementById('main-content');
+    const modalContainer = document.getElementById('modal-container');
+
+    for (const html of results) {
+        const temp = document.createElement('div');
+        temp.innerHTML = html;
+
+        temp.querySelectorAll('section').forEach(el => main.appendChild(el));
+        temp.querySelectorAll('.modal, .nfe-modal-overlay').forEach(el => modalContainer.appendChild(el));
+    }
+}
 
 function navigateTo(sectionId) {
     document.querySelectorAll('section').forEach(s => s.style.display = 'none');
@@ -25,28 +47,30 @@ function navigateTo(sectionId) {
     if (cfg && cfg.init && !cfg.loaded) {
         cfg.init();
         cfg.loaded = true;
-  }
+    }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadPartials();
+
     // Configurar menu
     document.querySelectorAll('.menu button').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+        btn.addEventListener('click', () => {
             const section = btn.dataset.section;
             if (section) navigateTo(section);
         });
     });
-    initNFeImport();
 
-    // Iniciar na seção padrão
+    initNFeImport();
     navigateTo('pos');
 
-    // Global Listeners (Modais fechar com X)
+    // Fechar modais com X
     document.querySelectorAll('.close').forEach(span => {
         span.addEventListener('click', (e) => {
             e.target.closest('.modal').style.display = 'none';
         });
     });
 });
+
 window.toggleMobileMenu = () =>
     document.getElementById('main-menu').classList.toggle('active');

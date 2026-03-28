@@ -106,5 +106,6 @@ export const Api = {
         body: JSON.stringify(data)
     }),
 
-    getBestCustomer: () => request('/reports/best-customer')
+    getBestCustomer: () => request('/reports/best-customer'),
+    getMonthlyProfit: () => request('/reports/monthly-profit')
 };

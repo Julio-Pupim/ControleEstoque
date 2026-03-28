@@ -1,0 +1,133 @@
+<!-- Produtos -->
+<section id="products" style="display:none;">
+  <div class="section-header">
+    <h2>Produtos</h2>
+    <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+      <button id="btn-nfe-import" class="btn-secondary">📄 Importar NF-e</button>
+      <button id="btn-new-product" class="btn-primary">+ Novo Produto</button>
+    </div>
+  </div>
+
+  <div class="filter-bar" style="display:flex;gap:10px;">
+    <select id="product-category-filter" style="width:200px;margin-bottom:0;">
+      <option value="">Todas as Categorias</option>
+    </select>
+    <input type="text" id="product-search-input" placeholder="Buscar produto..." style="flex:1;margin:0;">
+  </div>
+
+  <div class="table-responsive">
+    <table>
+      <thead>
+        <tr>
+          <th>Nome</th><th>Marca</th><th>Categoria</th>
+          <th>Custo</th><th>Preço</th><th>Estoque</th><th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="products-list"></tbody>
+    </table>
+  </div>
+  <div class="pagination-controls" id="product-pagination">
+    <button id="btn-prev-prod">Anterior</button>
+    <span id="product-page-info"></span>
+    <button id="btn-next-prod">Próxima</button>
+  </div>
+</section>
+
+<!-- Modal: Produto -->
+<div id="product-modal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h3 id="product-modal-title">Produto</h3>
+    <form id="product-form">
+      <input type="hidden" id="prod-id">
+      <label>Cód. Barras:</label>
+      <input type="text" id="prod-barcode" placeholder="Opcional — deixe em branco se não houver">
+      <label>Código:</label>
+      <input type="text" id="prod-code">
+      <label>Nome:</label>
+      <input type="text" id="prod-name" required>
+      <label>Marca:</label>
+      <select id="prod-brand" required></select>
+      <label>Categoria:</label>
+      <select id="prod-category" required></select>
+      <label>Preço:</label>
+      <input type="number" step="0.01" id="prod-price" required>
+      <label>Custo:</label>
+      <input type="number" step="0.01" id="prod-cost" placeholder="Opcional">
+      <label id="prod-stock-label">Estoque:</label>
+      <input type="number" id="prod-stock" required>
+      <button type="submit" class="btn-primary" style="width:100%">Salvar</button>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Importar NF-e -->
+<div id="nfe-modal" class="nfe-modal-overlay">
+  <div class="nfe-modal-box">
+
+    <div class="nfe-modal-header">
+      <div>
+        <h3 class="nfe-modal-title">Importar Produtos via NF-e</h3>
+        <p class="nfe-modal-subtitle">Leia o XML e cadastre ou atualize o estoque automaticamente</p>
+      </div>
+      <button id="nfe-btn-close" class="nfe-close-btn" aria-label="Fechar">&times;</button>
+    </div>
+
+    <!-- STEP: upload -->
+    <div id="nfe-step-upload" class="nfe-step">
+      <div class="nfe-drop-area" id="nfe-drop-area">
+        <div class="nfe-drop-icon">📄</div>
+        <p class="nfe-drop-label">Selecione o arquivo XML da NF-e</p>
+        <p class="nfe-drop-hint">Formatos aceitos: .xml</p>
+        <label class="btn-primary nfe-file-label">
+          Escolher arquivo
+          <input type="file" id="nfe-file-input" accept=".xml" style="display:none;">
+        </label>
+      </div>
+      <p id="nfe-upload-error" class="nfe-error" style="display:none;"></p>
+    </div>
+
+    <!-- STEP: loading -->
+    <div id="nfe-step-loading" class="nfe-step" style="display:none;">
+      <div class="nfe-loading">
+        <div class="nfe-spinner"></div>
+        <p>Analisando NF-e...</p>
+      </div>
+    </div>
+
+    <!-- STEP: preview -->
+    <div id="nfe-step-preview" class="nfe-step" style="display:none;">
+      <div id="nfe-emitter-info" class="nfe-emitter-card"></div>
+      <div id="nfe-stats" class="nfe-stats-bar"></div>
+
+      <form id="nfe-preview-form">
+        <div class="nfe-table-scroll">
+          <table class="nfe-table">
+            <thead>
+              <tr>
+                <th>Produto</th>
+                <th>Custo Unit.</th>
+                <th>Marca</th>
+                <th>Categoria</th>
+                <th>Preço Venda</th>
+                <th>Ação</th>
+              </tr>
+            </thead>
+            <tbody id="nfe-product-rows"></tbody>
+          </table>
+        </div>
+
+        <div class="nfe-preview-footer">
+          <button type="button" id="nfe-btn-back" class="btn-secondary">← Voltar</button>
+          <button type="submit" class="btn-primary">✓ Confirmar Import</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- STEP: result -->
+    <div id="nfe-step-result" class="nfe-step" style="display:none;">
+      <div id="nfe-result"></div>
+    </div>
+
+  </div>
+</div>
